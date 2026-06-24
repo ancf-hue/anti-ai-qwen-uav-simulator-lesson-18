@@ -1,3 +1,12 @@
+<img width="1000" height="800" alt="ai_image" src="https://github.com/user-attachments/assets/ed9fd6d1-9fec-40ef-89f8-c94f683b6c00" />
+
+
+
+
+
+
+
+
 "Бесплатный открытый социальный проект с открытым исходным кодом".
 
 # 🌲 Урок 18: Эколог — БПЛА-тренажёр
