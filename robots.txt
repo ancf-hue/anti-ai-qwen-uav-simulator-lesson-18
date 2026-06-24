@@ -1,0 +1,17 @@
+# robots.txt для Урок 18: Эколог — БПЛА-тренажёр
+# Anti-AI Qwen Academy
+
+User-agent: *
+Allow: /
+
+# Разрешаем индексацию всех ресурсов
+Allow: /index.html
+Allow: /uav-operator.jpg
+Allow: /favicon.ico
+
+# Sitemap
+Sitemap: https://anti-ai-qwen-uav-simulator-lesson-1-woad.vercel.app/sitemap.xml
+
+# Не сканируем технические файлы (опционально)
+# Disallow: /node_modules/
+# Disallow: /.vercel/
