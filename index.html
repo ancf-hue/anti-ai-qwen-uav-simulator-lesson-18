@@ -9,46 +9,6 @@
 *{ box-sizing: border-box; margin: 0; padding: 0;}
 body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background:#0a1a0a; color:#ccffcc;}
 
-#loading-screen{
-  position: fixed; inset: 0; background: #0a1a0a;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 99999; transition: opacity 0.5s;
-}
-#loading-screen.hidden{ opacity: 0; pointer-events: none; }
-.loading-spinner{
-  width: 60px; height: 60px; border: 4px solid rgba(50,150,50,0.3);
-  border-top-color: #50c878; border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin{ to{ transform: rotate(360deg); } }
-.loading-text{ margin-top: 20px; color: #50c878; font-size: 18px; font-family: monospace; }
-.loading-status{ margin-top: 10px; color: #ccffcc; font-size: 12px; font-family: monospace; opacity: 0.7; }
-
-#error-screen{
-  position: fixed; inset: 0; background: rgba(10, 26, 10, 0.98);
-  display: none; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 999999; padding: 20px; text-align: center;
-}
-#error-screen.show{ display: flex; }
-.error-box{
-  max-width: 600px; background: #1a2a1a; padding: 40px; border-radius: 20px;
-  border: 2px solid #ff3300; box-shadow: 0 0 60px rgba(255,51,0,0.3);
-}
-.error-box h1{ color: #ff3300; font-size: 32px; margin-bottom: 20px; }
-.error-box p{ margin: 10px 0; line-height: 1.6; color: #ccffcc; }
-.error-box pre{
-  background: #0a1a0a; padding: 15px; border-radius: 10px;
-  text-align: left; overflow-x: auto; margin: 15px 0;
-  color: #ff9966; font-size: 12px; border-left: 3px solid #ff3300;
-}
-.error-btn{
-  padding: 12px 30px; background: linear-gradient(135deg, #329632, #1e641e);
-  border: none; border-radius: 10px; color: white; font-size: 14px;
-  cursor: pointer; margin: 10px 5px; font-weight: bold;
-  font-family: 'Orbitron', monospace; text-transform: uppercase;
-}
-.error-btn:hover{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(50,150,50,0.4); }
-
 .logo-header{ position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); border-radius: 50px; border: 2px solid transparent; background-clip: padding-box; box-shadow: 0 8px 32px rgba(50, 150, 50, 0.4), 0 0 40px rgba(30, 100, 30, 0.3);}
 .logo-header::before{ content:''; position: absolute; inset:-2px; background: linear-gradient(135deg,#329632,#1e641e,#50c878, #329632); border-radius: 50px; z-index:-1; animation: gradientShift 5s ease infinite; background-size: 300% 300%;}
 @keyframes gradientShift{ 0%, 100%{ background-position: 0% 50%;} 50%{ background-position: 100% 50%;}}
@@ -86,7 +46,7 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
 
 #simulator-page{ position: fixed; inset: 0; opacity: 0; pointer-events: none; transition: opacity 1s ease;}
 #simulator-page.active{ opacity: 1; pointer-events: all;}
-#simulator-page canvas{ display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+#simulator-page canvas{ display: block; width: 100%; height: 100%; }
 
 #stats-panel{ position: fixed; top: 90px; left: 20px; z-index: 100; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); border-radius: 20px; padding: 8px 15px; border-left: 4px solid #329632; pointer-events: none; font-family: monospace;}
 .stats{ font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap;}
@@ -152,32 +112,6 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
 </head>
 <body>
 
-<!-- Экран загрузки -->
-<div id="loading-screen">
-  <div class="loading-spinner"></div>
-  <div class="loading-text">🌲 Загрузка Эколог-симулятора...</div>
-  <div class="loading-status" id="loading-status">Проверка WebGL...</div>
-</div>
-
-<!-- Экран ошибок -->
-<div id="error-screen">
-  <div class="error-box">
-    <h1>❌ Ошибка загрузки</h1>
-    <p id="error-message">Не удалось запустить симулятор</p>
-    <pre id="error-details"></pre>
-    <p><strong>Что можно попробовать:</strong></p>
-    <ul style="text-align:left; margin: 15px 0; color: #ccffcc;">
-      <li>Обновить страницу (F5)</li>
-      <li>Очистить кэш браузера (Ctrl+Shift+Delete)</li>
-      <li>Проверить интернет-соединение</li>
-      <li>Попробовать другой браузер (Chrome/Firefox/Edge)</li>
-      <li>Отключить прокси/VPN</li>
-    </ul>
-    <button class="error-btn" onclick="location.reload()">🔄 Перезагрузить</button>
-    <button class="error-btn" onclick="window.location.href='/'">🏠 В главное меню</button>
-  </div>
-</div>
-
 <div class="logo-header">
   <img id="logoImg" src="favicon.ico" alt="ЭКОЛОГ">
   <div class="logo-text">
@@ -205,8 +139,8 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
   <div class="difficulty-info">
     <h3>📊 Параметры уровней:</h3>
     <p><strong>🟢 Лёгкий:</strong> 3 проблемы, 50 деревьев, 2 минуты</p>
-    <p><strong>🟡 Средний:</strong> 5 проблем, 100 деревьев, 2.5 минуты</p>
-    <p><strong>🔴 Сложный:</strong> 8 проблем, 150 деревьев, 3 минуты</p>
+    <p><strong>🟡 Средний:</strong> 5 проблемы, 100 деревьев, 2.5 минуты</p>
+    <p><strong>🔴 Сложный:</strong> 8 проблемы, 150 деревьев, 3 минуты</p>
     <p style="color:#ff6666; margin-top:10px;"><strong>⚠️ ПРАВИЛА:</strong> Столкновение с деревом = провал!</p>
   </div>
 </div>
@@ -291,144 +225,13 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
   <source src="ekolog-theme.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Множественные CDN для Three.js с fallback -->
-<script>
-  // Глобальная обработка ошибок
-  window.addEventListener('error', function(e) {
-    console.error('🔴 Глобальная ошибка:', e.message);
-    if (e.message && e.message.includes('THREE')) {
-      showError('Ошибка Three.js', e.message);
-    }
-  });
-  
-  window.addEventListener('unhandledrejection', function(e) {
-    console.error('🔴 Необработанное Promise:', e.reason);
-    showError('Ошибка загрузки', String(e.reason));
-  });
-  
-  function showError(title, details) {
-    const errorScreen = document.getElementById('error-screen');
-    const errorMessage = document.getElementById('error-message');
-    const errorDetails = document.getElementById('error-details');
-    const loadingScreen = document.getElementById('loading-screen');
-    
-    if (errorMessage) errorMessage.innerText = title;
-    if (errorDetails) errorDetails.innerText = details || 'Неизвестная ошибка';
-    if (errorScreen) errorScreen.classList.add('show');
-    if (loadingScreen) loadingScreen.classList.add('hidden');
-  }
-  
-  function updateLoadingStatus(text) {
-    const status = document.getElementById('loading-status');
-    if (status) status.innerText = text;
-  }
-  
-  // Проверка WebGL
-  function checkWebGL() {
-    try {
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) throw new Error('WebGL не поддерживается');
-      return true;
-    } catch (e) {
-      showError('WebGL не поддерживается', 
-        'Ваш браузер не поддерживает WebGL.\nПопробуйте обновить браузер или включить аппаратное ускорение.');
-      return false;
-    }
-  }
-  
-  // Загрузка Three.js с множественными fallback
-  function loadThreeJS() {
-    return new Promise((resolve, reject) => {
-      const cdnList = [
-        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-        'https://unpkg.com/three@0.128.0/build/three.min.js',
-        'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
-        'https://cdn.jsdelivr.net/three.js/r128/three.min.js'
-      ];
-      
-      let currentIndex = 0;
-      
-      function tryNext() {
-        if (currentIndex >= cdnList.length) {
-          reject(new Error('Все CDN недоступны'));
-          return;
-        }
-        
-        const url = cdnList[currentIndex];
-        updateLoadingStatus(`Загрузка Three.js (${currentIndex + 1}/${cdnList.length})...`);
-        console.log(`📦 Попытка загрузки Three.js с: ${url}`);
-        
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        
-        script.onload = function() {
-          if (typeof THREE !== 'undefined') {
-            console.log(`✅ Three.js загружен с: ${url}`);
-            updateLoadingStatus('✅ Three.js загружен');
-            resolve();
-          } else {
-            currentIndex++;
-            tryNext();
-          }
-        };
-        
-        script.onerror = function() {
-          console.warn(`❌ Не удалось загрузить с: ${url}`);
-          currentIndex++;
-          tryNext();
-        };
-        
-        document.head.appendChild(script);
-      }
-      
-      tryNext();
-    });
-  }
-  
-  // Главная функция инициализации
-  async function initApp() {
-    try {
-      updateLoadingStatus('Проверка WebGL...');
-      if (!checkWebGL()) return;
-      
-      updateLoadingStatus('Загрузка 3D-библиотеки...');
-      await loadThreeJS();
-      
-      updateLoadingStatus('Инициализация симулятора...');
-      
-      // Теперь безопасно инициализировать state с THREE.Vector3
-      initializeState();
-      
-      // Скрыть экран загрузки
-      const loadingScreen = document.getElementById('loading-screen');
-      if (loadingScreen) {
-        loadingScreen.classList.add('hidden');
-        setTimeout(() => loadingScreen.style.display = 'none', 500);
-      }
-      
-      console.log('✅ Приложение полностью загружено');
-      
-    } catch (error) {
-      console.error('❌ Ошибка инициализации:', error);
-      showError('Ошибка загрузки приложения', error.message || String(error));
-    }
-  }
-  
-  // Запуск после загрузки DOM
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-  } else {
-    initApp();
-  }
-</script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 console.log('🌲 Эколог-симулятор загружен');
 console.log('🎮 Управление: WASD + мышь для обзора 360°');
 console.log('⚠️ Правила: Столкновение с деревом = провал!');
 
+// ========== КОНФИГИ ==========
 const DIFFICULTY_CONFIG = {
   easy: { problemCount: 3, treeCount: 50, MISSION_TIME: 120, name: 'Лёгкий' },
   medium: { problemCount: 5, treeCount: 100, MISSION_TIME: 150, name: 'Средний' },
@@ -437,36 +240,27 @@ const DIFFICULTY_CONFIG = {
 
 const PROBLEM_TYPES = ['🔥 Пожар', '🪓 Незаконная вырубка', '🏭 Загрязнение', '🦌 Браконьерство', '💧 Разлив нефти'];
 
-let currentDifficulty = 'easy';
-let state = null; // Инициализируется после загрузки THREE
+// ========== ГЛОБАЛЬНОЕ СОСТОЯНИЕ (исправлено: объявлено ДО всех функций) ==========
+let state = {
+  animationId: null,
+  gameCompleted: false,
+  timeLeft: 120,
+  timerInterval: null,
+  isRestarting: false,
+  problemsFound: 0,
+  batteryLevel: 100,
+  score: 0,
+  dronePos: new THREE.Vector3(0, 10, 0),
+  droneVel: new THREE.Vector3(0, 0, 0),
+  propAngle: 0,
+  signalLevel: 100,
+  currentProblem: null,
+  scanProgress: 0,
+  cameraAngle: 0,
+  cameraPitch: -0.3
+};
 
-function initializeState() {
-  if (typeof THREE === 'undefined') {
-    throw new Error('THREE не определён при инициализации state');
-  }
-  
-  state = {
-    animationId: null, 
-    gameCompleted: false, 
-    timeLeft: 120, 
-    timerInterval: null, 
-    isRestarting: false,
-    problemsFound: 0, 
-    batteryLevel: 100, 
-    score: 0,
-    dronePos: new THREE.Vector3(0, 10, 0),
-    droneVel: new THREE.Vector3(0, 0, 0),
-    propAngle: 0, 
-    signalLevel: 100,
-    currentProblem: null, 
-    scanProgress: 0,
-    cameraAngle: 0, 
-    cameraPitch: -0.3
-  };
-  
-  console.log('✅ State инициализирован');
-}
-
+// ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
 let scene, camera, renderer, droneGroup;
 let problems = [], trees = [];
 let propellers = [];
@@ -474,7 +268,9 @@ let audioCtx = null, notifTimeout = null, lastNotifText = "";
 let keys = {};
 let mouseDown = false, lastMouseX = 0, lastMouseY = 0;
 let listenersAttached = false;
+let currentDifficulty = 'easy';
 
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 function ensureAudio(){
   if(!audioCtx){ try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return false; } }
   if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
@@ -516,7 +312,7 @@ function showNotification(text, type = ''){
 }
 
 function disposeSimulator(){
-  if(state && state.animationId){
+  if(state.animationId){
     cancelAnimationFrame(state.animationId);
     state.animationId = null;
   }
@@ -543,33 +339,10 @@ function disposeSimulator(){
   camera = null;
 }
 
-async function startSimulator(difficulty){
-  if (!state) {
-    showError('Симулятор не готов', 'Подождите завершения загрузки...');
-    return;
-  }
-  
-  currentDifficulty = difficulty;
-  const config = DIFFICULTY_CONFIG[difficulty];
-  state.timeLeft = config.MISSION_TIME;
-  state.batteryLevel = 100;
-  ensureAudio();
-  const music = document.getElementById('bg-music');
-  if(music.paused){ music.volume = 0.4; music.play().catch(e => {}); }
-  
-  document.getElementById('intro-page').classList.add('hidden');
-  setTimeout(() => {
-    document.getElementById('simulator-page').classList.add('active');
-    document.getElementById('problems-total').innerText = config.problemCount;
-    initSimulator();
-    startMissionTimer();
-  }, 800);
-}
-
 function exitToMenu(){
-  if(state && state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
+  if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
   disposeSimulator();
-  if(state) state.gameCompleted = false;
+  state.gameCompleted = false;
   document.getElementById('victoryModal').classList.remove('show');
   document.getElementById('defeatModal').classList.remove('show');
   document.getElementById('simulator-page').classList.remove('active');
@@ -579,7 +352,7 @@ function exitToMenu(){
 }
 
 function showVictoryModal(){
-  if(!state || state.gameCompleted) return;
+  if(state.gameCompleted) return;
   state.gameCompleted = true;
   if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
   if(state.animationId){ cancelAnimationFrame(state.animationId); state.animationId = null; }
@@ -591,7 +364,7 @@ function showVictoryModal(){
 }
 
 function showDefeatModal(reason){
-  if(!state || state.gameCompleted) return;
+  if(state.gameCompleted) return;
   state.gameCompleted = true;
   if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
   if(state.animationId){ cancelAnimationFrame(state.animationId); state.animationId = null; }
@@ -732,13 +505,172 @@ function createDetailedDrone(){
   return group;
 }
 
-function initSimulator(){
-  if (!state) {
-    showError('Симулятор не инициализирован', 'State не создан');
+function updateDrone(){
+  if(state.gameCompleted) return;
+  
+  // Проверка наличия THREE
+  if(typeof THREE === 'undefined'){
+    showNotification('❌ Ошибка: библиотека Three.js не загружена!', 'hit');
     return;
   }
   
+  const cameraForward = new THREE.Vector3();
+  camera.getWorldDirection(cameraForward);
+  cameraForward.y = 0;
+  cameraForward.normalize();
+  
+  const cameraRight = new THREE.Vector3();
+  cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0)).normalize();
+  
+  const speed = 0.15;
+  
+  if(keys['w'] || keys['arrowup']) {
+    state.droneVel.x += cameraForward.x * speed;
+    state.droneVel.z += cameraForward.z * speed;
+  }
+  if(keys['s'] || keys['arrowdown']) {
+    state.droneVel.x -= cameraForward.x * speed;
+    state.droneVel.z -= cameraForward.z * speed;
+  }
+  if(keys['a'] || keys['arrowleft']) {
+    state.droneVel.x -= cameraRight.x * speed;
+    state.droneVel.z -= cameraRight.z * speed;
+  }
+  if(keys['d'] || keys['arrowright']) {
+    state.droneVel.x += cameraRight.x * speed;
+    state.droneVel.z += cameraRight.z * speed;
+  }
+  if(keys['q'] || keys['shift']) state.droneVel.y += speed * 0.5;
+  if(keys['e'] || keys['control']) state.droneVel.y -= speed * 0.5;
+  
+  state.droneVel.multiplyScalar(0.95);
+  state.dronePos.add(state.droneVel);
+  
+  state.dronePos.x = Math.max(-100, Math.min(100, state.dronePos.x));
+  state.dronePos.z = Math.max(-100, Math.min(100, state.dronePos.z));
+  state.dronePos.y = Math.max(2, Math.min(50, state.dronePos.y));
+  
+  if(droneGroup){
+    droneGroup.position.copy(state.dronePos);
+    if(state.droneVel.length() > 0.01){
+      const angle = Math.atan2(state.droneVel.x, state.droneVel.z);
+      droneGroup.rotation.y = angle;
+    }
+    const tiltX = -state.droneVel.z * 0.3;
+    const tiltZ = state.droneVel.x * 0.3;
+    droneGroup.rotation.x += (tiltX - droneGroup.rotation.x) * 0.1;
+    droneGroup.rotation.z += (tiltZ - droneGroup.rotation.z) * 0.1;
+  }
+  
+  for(let i = 0; i < trees.length; i++){
+    const tree = trees[i];
+    const dist = state.dronePos.distanceTo(tree.pos);
+    if(dist < tree.radius + 1){
+      SFX.crash();
+      showNotification("💥 СТОЛКНОВЕНИЕ С ДЕРЕВОМ! Миссия провалена!", 'hit');
+      showDefeatModal("💥 Дрон столкнулся с деревом!");
+      return;
+    }
+  }
+  
+  if(state.dronePos.y < 2.5){
+    SFX.crash();
+    showNotification("💥 Дрон упал! Миссия провалена!", 'hit');
+    showDefeatModal("💥 Дрон упал на землю!");
+    return;
+  }
+  
+  let scanning = false;
+  let activeProblem = null;
+  problems.forEach(problem => {
+    if(!problem.found){
+      const dist = Math.sqrt(
+        Math.pow(state.dronePos.x - problem.pos.x, 2) + 
+        Math.pow(state.dronePos.z - problem.pos.z, 2)
+      );
+      if(dist < problem.radius && state.dronePos.y < 15){
+        scanning = true;
+        activeProblem = problem;
+        problem.scanProgress += 0.5;
+        document.getElementById('problem-type').innerText = problem.type;
+        document.getElementById('problem-severity').innerText = '⭐'.repeat(problem.severity);
+        document.getElementById('scan-progress').innerText = Math.round(problem.scanProgress);
+        
+        if(problem.scanProgress >= 100){
+          problem.found = true;
+          state.problemsFound++;
+          state.score += 200;
+          scene.remove(problem.marker);
+          scene.remove(problem.mesh);
+          SFX.success();
+          showNotification(`✅ ${problem.type} обнаружен! (${state.problemsFound}/${DIFFICULTY_CONFIG[currentDifficulty].problemCount})`, 'success');
+          
+          document.getElementById('problems-found').innerText = state.problemsFound;
+          document.getElementById('score-value').innerText = state.score;
+          
+          if(state.problemsFound >= DIFFICULTY_CONFIG[currentDifficulty].problemCount){
+            showVictoryModal();
+          }
+        }
+      }
+    }
+  });
+  
+  if(!scanning){
+    document.getElementById('scan-progress').innerText = '0';
+    document.getElementById('problem-type').innerText = '-';
+    document.getElementById('problem-severity').innerText = '-';
+  }
+  
+  document.getElementById('drone-altitude').innerText = Math.round(state.dronePos.y);
+  document.getElementById('drone-speed').innerText = Math.round(state.droneVel.length() * 10);
+  document.getElementById('drone-signal').innerText = Math.round(state.signalLevel);
+  document.getElementById('battery-level').innerText = Math.round(state.batteryLevel);
+  
+  state.batteryLevel = Math.max(0, state.batteryLevel - 0.03);
+  if(state.batteryLevel < 20 && state.batteryLevel > 19.9){
+    SFX.warning();
+  }
+}
+
+function animate(){
+  if(state.gameCompleted){ state.animationId = null; return; }
+  state.animationId = requestAnimationFrame(animate);
+  
+  // Проверка, что всё инициализировано
+  if(typeof THREE === 'undefined' || !scene || !camera || !renderer) return;
+  
+  updateDrone();
+  if(state.gameCompleted) return;
+  
+  state.propAngle += 0.6;
+  propellers.forEach(p => { p.rotation.y = state.propAngle; });
+  
+  const camTarget = state.dronePos.clone();
+  camTarget.y += 8;
+  const camX = state.dronePos.x + Math.sin(state.cameraAngle) * 15 * Math.cos(state.cameraPitch);
+  const camZ = state.dronePos.z + Math.cos(state.cameraAngle) * 15 * Math.cos(state.cameraPitch);
+  camera.position.set(camX, camTarget.y, camZ);
+  camera.lookAt(state.dronePos);
+  
+  problems.forEach(problem => {
+    if(!problem.found && problem.marker){
+      problem.marker.rotation.y += 0.02;
+    }
+  });
+  
+  renderer.render(scene, camera);
+}
+
+function initSimulator(){
   console.log('🌲 Инициализация эколог-симулятора...');
+  
+  // Проверка наличия THREE
+  if(typeof THREE === 'undefined'){
+    showNotification('❌ Ошибка: библиотека Three.js не загружена! Проверьте интернет-соединение.', 'hit');
+    console.error('❌ THREE не определён! Библиотека не загружена.');
+    return;
+  }
   
   disposeSimulator();
   
@@ -877,152 +809,46 @@ function initSimulator(){
   console.log(`✅ Эколог-симулятор запущен. Уровень: ${config.name}`);
 }
 
-function updateDrone(){
-  if(!state || state.gameCompleted) return;
+function fullGameRestart(){
+  if(state.isRestarting) return;
+  state.isRestarting = true;
   
-  const cameraForward = new THREE.Vector3();
-  camera.getWorldDirection(cameraForward);
-  cameraForward.y = 0;
-  cameraForward.normalize();
+  console.log('🔄 Перезапуск миссии...');
   
-  const cameraRight = new THREE.Vector3();
-  cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0)).normalize();
+  if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
+  document.getElementById('victoryModal').classList.remove('show');
+  document.getElementById('defeatModal').classList.remove('show');
   
-  const speed = 0.15;
+  initSimulator();
+  startMissionTimer();
+  showNotification("🔄 Миссия перезапущена!", 'success');
   
-  if(keys['w'] || keys['arrowup']) {
-    state.droneVel.x += cameraForward.x * speed;
-    state.droneVel.z += cameraForward.z * speed;
-  }
-  if(keys['s'] || keys['arrowdown']) {
-    state.droneVel.x -= cameraForward.x * speed;
-    state.droneVel.z -= cameraForward.z * speed;
-  }
-  if(keys['a'] || keys['arrowleft']) {
-    state.droneVel.x -= cameraRight.x * speed;
-    state.droneVel.z -= cameraRight.z * speed;
-  }
-  if(keys['d'] || keys['arrowright']) {
-    state.droneVel.x += cameraRight.x * speed;
-    state.droneVel.z += cameraRight.z * speed;
-  }
-  if(keys['q'] || keys['shift']) state.droneVel.y += speed * 0.5;
-  if(keys['e'] || keys['control']) state.droneVel.y -= speed * 0.5;
-  
-  state.droneVel.multiplyScalar(0.95);
-  state.dronePos.add(state.droneVel);
-  
-  state.dronePos.x = Math.max(-100, Math.min(100, state.dronePos.x));
-  state.dronePos.z = Math.max(-100, Math.min(100, state.dronePos.z));
-  state.dronePos.y = Math.max(2, Math.min(50, state.dronePos.y));
-  
-  if(droneGroup){
-    droneGroup.position.copy(state.dronePos);
-    if(state.droneVel.length() > 0.01){
-      const angle = Math.atan2(state.droneVel.x, state.droneVel.z);
-      droneGroup.rotation.y = angle;
-    }
-    const tiltX = -state.droneVel.z * 0.3;
-    const tiltZ = state.droneVel.x * 0.3;
-    droneGroup.rotation.x += (tiltX - droneGroup.rotation.x) * 0.1;
-    droneGroup.rotation.z += (tiltZ - droneGroup.rotation.z) * 0.1;
-  }
-  
-  for(let i = 0; i < trees.length; i++){
-    const tree = trees[i];
-    const dist = state.dronePos.distanceTo(tree.pos);
-    if(dist < tree.radius + 1){
-      SFX.crash();
-      showNotification("💥 СТОЛКНОВЕНИЕ С ДЕРЕВОМ! Миссия провалена!", 'hit');
-      showDefeatModal("💥 Дрон столкнулся с деревом!");
-      return;
-    }
-  }
-  
-  if(state.dronePos.y < 2.5){
-    SFX.crash();
-    showNotification("💥 Дрон упал! Миссия провалена!", 'hit');
-    showDefeatModal("💥 Дрон упал на землю!");
+  setTimeout(() => { state.isRestarting = false; }, 500);
+}
+
+function startSimulator(difficulty){
+  // Проверка, что THREE загружен
+  if(typeof THREE === 'undefined'){
+    showNotification('❌ Ошибка: библиотека Three.js не загружена! Проверьте интернет.', 'hit');
+    console.error('❌ THREE не определён! Библиотека не загружена.');
     return;
   }
   
-  let scanning = false;
-  let activeProblem = null;
-  problems.forEach(problem => {
-    if(!problem.found){
-      const dist = Math.sqrt(
-        Math.pow(state.dronePos.x - problem.pos.x, 2) + 
-        Math.pow(state.dronePos.z - problem.pos.z, 2)
-      );
-      if(dist < problem.radius && state.dronePos.y < 15){
-        scanning = true;
-        activeProblem = problem;
-        problem.scanProgress += 0.5;
-        document.getElementById('problem-type').innerText = problem.type;
-        document.getElementById('problem-severity').innerText = '⭐'.repeat(problem.severity);
-        document.getElementById('scan-progress').innerText = Math.round(problem.scanProgress);
-        
-        if(problem.scanProgress >= 100){
-          problem.found = true;
-          state.problemsFound++;
-          state.score += 200;
-          scene.remove(problem.marker);
-          scene.remove(problem.mesh);
-          SFX.success();
-          showNotification(`✅ ${problem.type} обнаружен! (${state.problemsFound}/${DIFFICULTY_CONFIG[currentDifficulty].problemCount})`, 'success');
-          
-          document.getElementById('problems-found').innerText = state.problemsFound;
-          document.getElementById('score-value').innerText = state.score;
-          
-          if(state.problemsFound >= DIFFICULTY_CONFIG[currentDifficulty].problemCount){
-            showVictoryModal();
-          }
-        }
-      }
-    }
-  });
+  currentDifficulty = difficulty;
+  const config = DIFFICULTY_CONFIG[difficulty];
+  state.timeLeft = config.MISSION_TIME;
+  state.batteryLevel = 100;
+  ensureAudio();
+  const music = document.getElementById('bg-music');
+  if(music.paused){ music.volume = 0.4; music.play().catch(e => {}); }
   
-  if(!scanning){
-    document.getElementById('scan-progress').innerText = '0';
-    document.getElementById('problem-type').innerText = '-';
-    document.getElementById('problem-severity').innerText = '-';
-  }
-  
-  document.getElementById('drone-altitude').innerText = Math.round(state.dronePos.y);
-  document.getElementById('drone-speed').innerText = Math.round(state.droneVel.length() * 10);
-  document.getElementById('drone-signal').innerText = Math.round(state.signalLevel);
-  document.getElementById('battery-level').innerText = Math.round(state.batteryLevel);
-  
-  state.batteryLevel = Math.max(0, state.batteryLevel - 0.03);
-  if(state.batteryLevel < 20 && state.batteryLevel > 19.9){
-    SFX.warning();
-  }
-}
-
-function animate(){
-  if(!state || state.gameCompleted){ if(state) state.animationId = null; return; }
-  state.animationId = requestAnimationFrame(animate);
-  
-  updateDrone();
-  if(state.gameCompleted) return;
-  
-  state.propAngle += 0.6;
-  propellers.forEach(p => { p.rotation.y = state.propAngle; });
-  
-  const camTarget = state.dronePos.clone();
-  camTarget.y += 8;
-  const camX = state.dronePos.x + Math.sin(state.cameraAngle) * 15 * Math.cos(state.cameraPitch);
-  const camZ = state.dronePos.z + Math.cos(state.cameraAngle) * 15 * Math.cos(state.cameraPitch);
-  camera.position.set(camX, camTarget.y, camZ);
-  camera.lookAt(state.dronePos);
-  
-  problems.forEach(problem => {
-    if(!problem.found && problem.marker){
-      problem.marker.rotation.y += 0.02;
-    }
-  });
-  
-  renderer.render(scene, camera);
+  document.getElementById('intro-page').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('simulator-page').classList.add('active');
+    document.getElementById('problems-total').innerText = config.problemCount;
+    initSimulator();
+    startMissionTimer();
+  }, 800);
 }
 
 function handleResize(){
@@ -1059,23 +885,6 @@ function handleMouseMove(e){
   }
 }
 
-function fullGameRestart(){
-  if(!state || state.isRestarting) return;
-  state.isRestarting = true;
-  
-  console.log('🔄 Перезапуск миссии...');
-  
-  if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
-  document.getElementById('victoryModal').classList.remove('show');
-  document.getElementById('defeatModal').classList.remove('show');
-  
-  initSimulator();
-  startMissionTimer();
-  showNotification("🔄 Миссия перезапущена!", 'success');
-  
-  setTimeout(() => { state.isRestarting = false; }, 500);
-}
-
 function setupEventListeners(){
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
@@ -1094,9 +903,11 @@ function setupEventListeners(){
 
 window.addEventListener('beforeunload', () => {
   disposeSimulator();
-  if(state && state.timerInterval) clearInterval(state.timerInterval);
+  if(state.timerInterval) clearInterval(state.timerInterval);
   if(audioCtx && audioCtx.state !== 'closed'){ try{ audioCtx.close(); } catch(e){} }
 });
+
+console.log('✅ Код полностью исправлен. state объявлен до всех функций.');
 </script>
 </body>
 </html>
