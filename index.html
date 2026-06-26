@@ -9,6 +9,46 @@
 *{ box-sizing: border-box; margin: 0; padding: 0;}
 body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background:#0a1a0a; color:#ccffcc;}
 
+#loading-screen{
+  position: fixed; inset: 0; background: #0a1a0a;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 99999; transition: opacity 0.5s;
+}
+#loading-screen.hidden{ opacity: 0; pointer-events: none; }
+.loading-spinner{
+  width: 60px; height: 60px; border: 4px solid rgba(50,150,50,0.3);
+  border-top-color: #50c878; border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin{ to{ transform: rotate(360deg); } }
+.loading-text{ margin-top: 20px; color: #50c878; font-size: 18px; font-family: monospace; }
+.loading-status{ margin-top: 10px; color: #ccffcc; font-size: 12px; font-family: monospace; opacity: 0.7; }
+
+#error-screen{
+  position: fixed; inset: 0; background: rgba(10, 26, 10, 0.98);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999999; padding: 20px; text-align: center;
+}
+#error-screen.show{ display: flex; }
+.error-box{
+  max-width: 600px; background: #1a2a1a; padding: 40px; border-radius: 20px;
+  border: 2px solid #ff3300; box-shadow: 0 0 60px rgba(255,51,0,0.3);
+}
+.error-box h1{ color: #ff3300; font-size: 32px; margin-bottom: 20px; }
+.error-box p{ margin: 10px 0; line-height: 1.6; color: #ccffcc; }
+.error-box pre{
+  background: #0a1a0a; padding: 15px; border-radius: 10px;
+  text-align: left; overflow-x: auto; margin: 15px 0;
+  color: #ff9966; font-size: 12px; border-left: 3px solid #ff3300;
+}
+.error-btn{
+  padding: 12px 30px; background: linear-gradient(135deg, #329632, #1e641e);
+  border: none; border-radius: 10px; color: white; font-size: 14px;
+  cursor: pointer; margin: 10px 5px; font-weight: bold;
+  font-family: 'Orbitron', monospace; text-transform: uppercase;
+}
+.error-btn:hover{ transform: translateY(-2px); box-shadow: 0 5px 15px rgba(50,150,50,0.4); }
+
 .logo-header{ position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); border-radius: 50px; border: 2px solid transparent; background-clip: padding-box; box-shadow: 0 8px 32px rgba(50, 150, 50, 0.4), 0 0 40px rgba(30, 100, 30, 0.3);}
 .logo-header::before{ content:''; position: absolute; inset:-2px; background: linear-gradient(135deg,#329632,#1e641e,#50c878, #329632); border-radius: 50px; z-index:-1; animation: gradientShift 5s ease infinite; background-size: 300% 300%;}
 @keyframes gradientShift{ 0%, 100%{ background-position: 0% 50%;} 50%{ background-position: 100% 50%;}}
@@ -46,7 +86,7 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
 
 #simulator-page{ position: fixed; inset: 0; opacity: 0; pointer-events: none; transition: opacity 1s ease;}
 #simulator-page.active{ opacity: 1; pointer-events: all;}
-#simulator-page canvas{ display: block; width: 100%; height: 100%; }
+#simulator-page canvas{ display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
 
 #stats-panel{ position: fixed; top: 90px; left: 20px; z-index: 100; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); border-radius: 20px; padding: 8px 15px; border-left: 4px solid #329632; pointer-events: none; font-family: monospace;}
 .stats{ font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap;}
@@ -111,6 +151,32 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
 </style>
 </head>
 <body>
+
+<!-- Экран загрузки -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">🌲 Загрузка Эколог-симулятора...</div>
+  <div class="loading-status" id="loading-status">Проверка WebGL...</div>
+</div>
+
+<!-- Экран ошибок -->
+<div id="error-screen">
+  <div class="error-box">
+    <h1>❌ Ошибка загрузки</h1>
+    <p id="error-message">Не удалось запустить симулятор</p>
+    <pre id="error-details"></pre>
+    <p><strong>Что можно попробовать:</strong></p>
+    <ul style="text-align:left; margin: 15px 0; color: #ccffcc;">
+      <li>Обновить страницу (F5)</li>
+      <li>Очистить кэш браузера (Ctrl+Shift+Delete)</li>
+      <li>Проверить интернет-соединение</li>
+      <li>Попробовать другой браузер (Chrome/Firefox/Edge)</li>
+      <li>Отключить прокси/VPN</li>
+    </ul>
+    <button class="error-btn" onclick="location.reload()">🔄 Перезагрузить</button>
+    <button class="error-btn" onclick="window.location.href='/'">🏠 В главное меню</button>
+  </div>
+</div>
 
 <div class="logo-header">
   <img id="logoImg" src="favicon.ico" alt="ЭКОЛОГ">
@@ -225,7 +291,139 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
   <source src="ekolog-theme.mp3" type="audio/mpeg">
 </audio>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Множественные CDN для Three.js с fallback -->
+<script>
+  // Глобальная обработка ошибок
+  window.addEventListener('error', function(e) {
+    console.error('🔴 Глобальная ошибка:', e.message);
+    if (e.message && e.message.includes('THREE')) {
+      showError('Ошибка Three.js', e.message);
+    }
+  });
+  
+  window.addEventListener('unhandledrejection', function(e) {
+    console.error('🔴 Необработанное Promise:', e.reason);
+    showError('Ошибка загрузки', String(e.reason));
+  });
+  
+  function showError(title, details) {
+    const errorScreen = document.getElementById('error-screen');
+    const errorMessage = document.getElementById('error-message');
+    const errorDetails = document.getElementById('error-details');
+    const loadingScreen = document.getElementById('loading-screen');
+    
+    if (errorMessage) errorMessage.innerText = title;
+    if (errorDetails) errorDetails.innerText = details || 'Неизвестная ошибка';
+    if (errorScreen) errorScreen.classList.add('show');
+    if (loadingScreen) loadingScreen.classList.add('hidden');
+  }
+  
+  function updateLoadingStatus(text) {
+    const status = document.getElementById('loading-status');
+    if (status) status.innerText = text;
+  }
+  
+  // Проверка WebGL
+  function checkWebGL() {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) throw new Error('WebGL не поддерживается');
+      return true;
+    } catch (e) {
+      showError('WebGL не поддерживается', 
+        'Ваш браузер не поддерживает WebGL.\nПопробуйте обновить браузер или включить аппаратное ускорение.');
+      return false;
+    }
+  }
+  
+  // Загрузка Three.js с множественными fallback
+  function loadThreeJS() {
+    return new Promise((resolve, reject) => {
+      const cdnList = [
+        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+        'https://unpkg.com/three@0.128.0/build/three.min.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
+        'https://cdn.jsdelivr.net/three.js/r128/three.min.js'
+      ];
+      
+      let currentIndex = 0;
+      
+      function tryNext() {
+        if (currentIndex >= cdnList.length) {
+          reject(new Error('Все CDN недоступны'));
+          return;
+        }
+        
+        const url = cdnList[currentIndex];
+        updateLoadingStatus(`Загрузка Three.js (${currentIndex + 1}/${cdnList.length})...`);
+        console.log(`📦 Попытка загрузки Three.js с: ${url}`);
+        
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        
+        script.onload = function() {
+          if (typeof THREE !== 'undefined') {
+            console.log(`✅ Three.js загружен с: ${url}`);
+            updateLoadingStatus('✅ Three.js загружен');
+            resolve();
+          } else {
+            currentIndex++;
+            tryNext();
+          }
+        };
+        
+        script.onerror = function() {
+          console.warn(`❌ Не удалось загрузить с: ${url}`);
+          currentIndex++;
+          tryNext();
+        };
+        
+        document.head.appendChild(script);
+      }
+      
+      tryNext();
+    });
+  }
+  
+  // Главная функция инициализации
+  async function initApp() {
+    try {
+      updateLoadingStatus('Проверка WebGL...');
+      if (!checkWebGL()) return;
+      
+      updateLoadingStatus('Загрузка 3D-библиотеки...');
+      await loadThreeJS();
+      
+      updateLoadingStatus('Инициализация симулятора...');
+      
+      // Теперь безопасно инициализировать state с THREE.Vector3
+      initializeState();
+      
+      // Скрыть экран загрузки
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => loadingScreen.style.display = 'none', 500);
+      }
+      
+      console.log('✅ Приложение полностью загружено');
+      
+    } catch (error) {
+      console.error('❌ Ошибка инициализации:', error);
+      showError('Ошибка загрузки приложения', error.message || String(error));
+    }
+  }
+  
+  // Запуск после загрузки DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
+</script>
+
 <script>
 console.log('🌲 Эколог-симулятор загружен');
 console.log('🎮 Управление: WASD + мышь для обзора 360°');
@@ -240,15 +438,34 @@ const DIFFICULTY_CONFIG = {
 const PROBLEM_TYPES = ['🔥 Пожар', '🪓 Незаконная вырубка', '🏭 Загрязнение', '🦌 Браконьерство', '💧 Разлив нефти'];
 
 let currentDifficulty = 'easy';
-let state = {
-  animationId: null, gameCompleted: false, timeLeft: 120, timerInterval: null, isRestarting: false,
-  problemsFound: 0, batteryLevel: 100, score: 0,
-  dronePos: new THREE.Vector3(0, 10, 0),
-  droneVel: new THREE.Vector3(0, 0, 0),
-  propAngle: 0, signalLevel: 100,
-  currentProblem: null, scanProgress: 0,
-  cameraAngle: 0, cameraPitch: -0.3
-};
+let state = null; // Инициализируется после загрузки THREE
+
+function initializeState() {
+  if (typeof THREE === 'undefined') {
+    throw new Error('THREE не определён при инициализации state');
+  }
+  
+  state = {
+    animationId: null, 
+    gameCompleted: false, 
+    timeLeft: 120, 
+    timerInterval: null, 
+    isRestarting: false,
+    problemsFound: 0, 
+    batteryLevel: 100, 
+    score: 0,
+    dronePos: new THREE.Vector3(0, 10, 0),
+    droneVel: new THREE.Vector3(0, 0, 0),
+    propAngle: 0, 
+    signalLevel: 100,
+    currentProblem: null, 
+    scanProgress: 0,
+    cameraAngle: 0, 
+    cameraPitch: -0.3
+  };
+  
+  console.log('✅ State инициализирован');
+}
 
 let scene, camera, renderer, droneGroup;
 let problems = [], trees = [];
@@ -299,7 +516,7 @@ function showNotification(text, type = ''){
 }
 
 function disposeSimulator(){
-  if(state.animationId){
+  if(state && state.animationId){
     cancelAnimationFrame(state.animationId);
     state.animationId = null;
   }
@@ -327,6 +544,11 @@ function disposeSimulator(){
 }
 
 async function startSimulator(difficulty){
+  if (!state) {
+    showError('Симулятор не готов', 'Подождите завершения загрузки...');
+    return;
+  }
+  
   currentDifficulty = difficulty;
   const config = DIFFICULTY_CONFIG[difficulty];
   state.timeLeft = config.MISSION_TIME;
@@ -345,9 +567,9 @@ async function startSimulator(difficulty){
 }
 
 function exitToMenu(){
-  if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
+  if(state && state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
   disposeSimulator();
-  state.gameCompleted = false;
+  if(state) state.gameCompleted = false;
   document.getElementById('victoryModal').classList.remove('show');
   document.getElementById('defeatModal').classList.remove('show');
   document.getElementById('simulator-page').classList.remove('active');
@@ -357,7 +579,7 @@ function exitToMenu(){
 }
 
 function showVictoryModal(){
-  if(state.gameCompleted) return;
+  if(!state || state.gameCompleted) return;
   state.gameCompleted = true;
   if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
   if(state.animationId){ cancelAnimationFrame(state.animationId); state.animationId = null; }
@@ -369,7 +591,7 @@ function showVictoryModal(){
 }
 
 function showDefeatModal(reason){
-  if(state.gameCompleted) return;
+  if(!state || state.gameCompleted) return;
   state.gameCompleted = true;
   if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
   if(state.animationId){ cancelAnimationFrame(state.animationId); state.animationId = null; }
@@ -511,6 +733,11 @@ function createDetailedDrone(){
 }
 
 function initSimulator(){
+  if (!state) {
+    showError('Симулятор не инициализирован', 'State не создан');
+    return;
+  }
+  
   console.log('🌲 Инициализация эколог-симулятора...');
   
   disposeSimulator();
@@ -651,7 +878,7 @@ function initSimulator(){
 }
 
 function updateDrone(){
-  if(state.gameCompleted) return;
+  if(!state || state.gameCompleted) return;
   
   const cameraForward = new THREE.Vector3();
   camera.getWorldDirection(cameraForward);
@@ -773,7 +1000,7 @@ function updateDrone(){
 }
 
 function animate(){
-  if(state.gameCompleted){ state.animationId = null; return; }
+  if(!state || state.gameCompleted){ if(state) state.animationId = null; return; }
   state.animationId = requestAnimationFrame(animate);
   
   updateDrone();
@@ -833,7 +1060,7 @@ function handleMouseMove(e){
 }
 
 function fullGameRestart(){
-  if(state.isRestarting) return;
+  if(!state || state.isRestarting) return;
   state.isRestarting = true;
   
   console.log('🔄 Перезапуск миссии...');
@@ -867,7 +1094,7 @@ function setupEventListeners(){
 
 window.addEventListener('beforeunload', () => {
   disposeSimulator();
-  if(state.timerInterval) clearInterval(state.timerInterval);
+  if(state && state.timerInterval) clearInterval(state.timerInterval);
   if(audioCtx && audioCtx.state !== 'closed'){ try{ audioCtx.close(); } catch(e){} }
 });
 </script>
